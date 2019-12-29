@@ -1,0 +1,12 @@
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+/dist
+
+# misc
+.DS_Store
+
+npm-debug.log*

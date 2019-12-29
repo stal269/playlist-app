@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Playlist App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body>
+    <div id="root">
+    </div>
+
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+      function start() {
+        gapi.client.init({
+          'apiKey': 'AIzaSyCVlWGDoB658Dvq2mpwgFly1ClqFNNJw7o'
+        });
+      };
+
+      gapi.load('client', start);
+    </script>
+  </body>
+</html>

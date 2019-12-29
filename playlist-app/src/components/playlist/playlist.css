@@ -1,0 +1,16 @@
+.pl_playlist_wrapper {
+    width: 400px;
+    height: 500px;
+    border: black solid 1px;
+    padding-left: 20px;
+}
+
+.pl_playlist {
+    height: 375px;
+    border: black solid 1px;
+    list-style-type: none;
+    margin: 20px 20px 0 0;
+    padding: 0;
+    overflow: scroll;
+    cursor: pointer;
+}
