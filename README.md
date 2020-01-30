@@ -8,7 +8,6 @@ setup:
 * npm run build
 
 2. backend code:
-* cd backend
 * npm install
 * npm run build
 * npm start
