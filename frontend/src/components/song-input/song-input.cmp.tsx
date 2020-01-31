@@ -1,7 +1,7 @@
 import {Component} from 'react';
 import React from 'react';
-import './song-input.css';
 const axios = require('axios');
+import './song-input.css';
 
 export class SongInput extends Component<any, {value: string}> {
 
@@ -13,13 +13,13 @@ export class SongInput extends Component<any, {value: string}> {
     render() {
         return (
             <div className="pl_input_wrapper">
-                <input 
-                    placeholder="Enter Video URL" 
-                    className="pl_input" 
-                    type="text" 
+                <input
+                    placeholder="Enter Video URL"
+                    className="pl_input"
+                    type="text"
                     value={this.state.value} 
                     onChange={this.handleChange.bind(this)}
-                    />
+                />
                 <button 
                     disabled={!this.state.value.length} 
                     className="pl_add_button" 

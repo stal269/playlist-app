@@ -11,7 +11,7 @@ export class App extends Component<any, ISongsContainer> {
 
   private static YOUTUBE_PLAYER_SOURCE_URL = 'https://www.youtube.com/iframe_api';
   private player: any = null;
-  private socket: any = io;
+  private socket: any;
 
   constructor(props: any) {
     super(props);
@@ -97,6 +97,11 @@ export class App extends Component<any, ISongsContainer> {
   }
 
   private registerSocketIOListeners() {
+    this.registerAddSongEvent();
+    this.registerDeleteSongEvent();
+  }
+
+  private registerAddSongEvent(): void {
     this.socket.on('add', (song: ISong) => {
       const isFirstSong: boolean = !this.state.songs.length;
 
@@ -113,7 +118,9 @@ export class App extends Component<any, ISongsContainer> {
             }
         });
     });
+  }
 
+  private registerDeleteSongEvent(): void {
     this.socket.on('delete', (deleteMessage: {id: string}) => {
       if (!this.state.songs.length) {
         return;
@@ -127,14 +134,14 @@ export class App extends Component<any, ISongsContainer> {
 
       if (firstSongId === deleteMessage.id) {
         if (!this.state.songs.length) {
-          this.player.stopVideo(); //todo: should check if enough
+          this.player.stopVideo();
 
           return;
         }
 
         this.playNextSong();
       }
-    })
+    });
   }
 }
 
