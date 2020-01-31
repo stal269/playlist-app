@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {SongItem} from '../song/song.cmp';
 import {ISong} from '../song/song.model';
-import {SongInput} from '../SongInput/song_input.cmp';
+import {SongInput} from '../song-input/song-input.cmp';
 import {ISongsContainer} from '../../app';
 import './playlist.css';
 
