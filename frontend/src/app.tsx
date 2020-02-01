@@ -2,10 +2,10 @@ import React, {Component} from 'react';
 import {Playlist} from './components/playlist/playlist.cmp';
 import {ISong} from './components/song/song.model';
 import io from 'socket.io-client';
-import './app.css';
-import {gapiClient} from './services/gapi.srv'
+import {gapiClient} from './services/gapi.srv';
 const axios = require('axios');
 declare let YT: any;
+import './app.css';
 
 export class App extends Component<any, ISongsContainer> {
 

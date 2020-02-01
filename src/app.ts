@@ -21,7 +21,7 @@ class App {
 
   private mountRoutes(): void {
     this.express
-      .use('/', express.static(path.join(__dirname, '../..', 'frontend', 'dist')))
+      .use('/', express.static(path.join(__dirname, '..', 'frontend', 'dist')))
       .post('/playlist/songs', bodyParser.json(),
          this.populateSongId.bind(this),
          playlistCtr.addSong.bind(playlistCtr),
