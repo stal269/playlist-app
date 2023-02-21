@@ -1,25 +1,25 @@
-import React, {Component} from 'react';
-import {SongItem} from '../song/song.cmp';
-import {ISong} from '../song/song.model';
-import {SongInput} from '../song-input/song-input.cmp';
-import {ISongsContainer} from '../../app';
+import React, { Component } from 'react';
+import { SongItem } from '../song/song.cmp';
+import { ISong } from '../song/song.model';
+import { SongInput } from '../song-input/song-input.cmp';
+import { ISongsContainer } from '../../app';
 import './playlist.css';
 
 export class Playlist extends Component<ISongsContainer> {
 
-    render() {
+    render () {
         return (
             <div className="pl_playlist_wrapper">
-                <SongInput/>
+                <SongInput />
                 <ul className="pl_playlist">
-                    {this.props.songs.map((song: ISong, index: number) => this.renderSong(song, index))}
+                    { this.props.songs.map((song: ISong, index: number) => this.renderSong(song, index)) }
                 </ul>
             </div>
         );
     }
 
-    private renderSong(song: ISong, key: number) {
-        return (<SongItem key={key} {...song}/>)
+    private renderSong (song: ISong, key: number) {
+        return (<SongItem key={ key } { ...song } />);
     }
 
 }
