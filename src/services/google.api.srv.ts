@@ -1,4 +1,5 @@
 const { google } = require('googleapis');
+require('dotenv').config();
 import { Duration } from 'luxon';
 
 export class GoogleApi {
@@ -6,7 +7,7 @@ export class GoogleApi {
     youtube = google.youtube(
         {
             version: 'v3',
-            auth: 'AIzaSyAc6rcxHMf-u63ZpUYxTjnagpwcsJFVHXk'
+            auth: process.env.API_TOKEN
         });
 
     async setVideosMetadata (songs: Song[]) {
