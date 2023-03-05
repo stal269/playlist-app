@@ -4,19 +4,15 @@ import * as path from 'path';
 import * as bodyParser from 'body-parser';
 import playlistCtr from './controllers/playlist.ctr';
 const getVideoId = require('get-video-id');
+import sio from './index';
 
 class App {
 
     public express: Express;
-    private io;
 
     constructor () {
         this.express = express();
         this.mountRoutes();
-    }
-
-    public setSocketIO (io) {
-        this.io = io;
     }
 
     private mountRoutes (): void {
@@ -25,23 +21,9 @@ class App {
             .post('/playlist/songs', bodyParser.json(),
                 this.populateSongId.bind(this),
                 playlistCtr.addSong.bind(playlistCtr),
-                this.notifySongAdded.bind(this)
             )
-            .delete('/playlist/songs/:id',
-                playlistCtr.deleteSong.bind(playlistCtr),
-                this.notifySongDeleted.bind(this)
-            )
+            .delete('/playlist/songs/:id', playlistCtr.deleteSong.bind(playlistCtr))
             .get('/playlist/songs', playlistCtr.getSongs.bind(playlistCtr));
-    }
-
-    private notifySongAdded (request: Request): void {
-        this.io.emit('add', request.body);
-    }
-
-    private notifySongDeleted (request: Request): void {
-        this.io.emit('delete', {
-            id: request.params.id
-        });
     }
 
     private populateSongId (request: Request, response: Response, next: NextFunction) {
@@ -57,6 +39,6 @@ class App {
 
         next();
     }
-}
+};
 
 export default new App();

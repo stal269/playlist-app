@@ -5,6 +5,7 @@ import io from 'socket.io-client';
 const axios = require('axios');
 declare let YT: any;
 import './app.css';
+import { ON_PLAYER_READY_EVENT, ON_PLAYER_STATE_CHANGE, PLAYER_HEIGHT, PLAYER_WIDTH, SONGS_API_PATH, SONG_ADDED_EVENT, SONG_DELETED_EVENT } from './consts';
 
 export class App extends Component<any, ISongsContainer> {
 
@@ -15,10 +16,7 @@ export class App extends Component<any, ISongsContainer> {
     constructor (props: any) {
         super(props);
         this.socket = io();
-
-        this.state = {
-            songs: []
-        };
+        this.state = { songs: [] };
     }
 
     componentDidMount () {
@@ -38,7 +36,7 @@ export class App extends Component<any, ISongsContainer> {
     }
 
     private loadSongs (): void {
-        axios.get('/playlist/songs')
+        axios.get(SONGS_API_PATH)
             .then((response: { data: { songs: ISong[]; }; }) => {
                 this.setState(response.data);
                 this.playNextSong();
@@ -50,16 +48,16 @@ export class App extends Component<any, ISongsContainer> {
 
     private onYouTubeIframeAPIReady (): void {
         new YT.Player('player', {
-            height: '500',
-            width: '800',
+            height: PLAYER_HEIGHT,
+            width: PLAYER_WIDTH,
             playerVars: {
                 controls: 0,
                 disablekb: 1,
                 autohide: 1
             },
             events: {
-                'onReady': this.onPlayerReady.bind(this),
-                'onStateChange': this.onPlayerStateChange.bind(this)
+                [ ON_PLAYER_READY_EVENT ]: this.onPlayerReady.bind(this),
+                [ ON_PLAYER_STATE_CHANGE ]: this.onPlayerStateChange.bind(this)
             }
         });
     }
@@ -71,10 +69,7 @@ export class App extends Component<any, ISongsContainer> {
 
     private onPlayerStateChange (event: any): void {
         if (event.data == YT.PlayerState.ENDED) {
-            this.setState({
-                songs: this.state.songs.slice(1)
-            });
-
+            this.setState({ songs: this.state.songs.slice(1) });
             this.playNextSong();
         }
     }
@@ -88,7 +83,16 @@ export class App extends Component<any, ISongsContainer> {
 
     private playNextSong (): void {
         if (this.state.songs.length) {
-            this.player.loadVideoById(this.state.songs[ 0 ].id);
+            this.player.loadVideoById({ videoId: this.state.songs[ 0 ].id });
+
+            const handle = setInterval(() => {
+                if (this.player.getPlayerState() != YT.PlayerState.UNSTARTED) {
+                    clearInterval(handle);
+                    return;
+                }
+
+                this.player.loadVideoById({ videoId: this.state.songs[ 0 ].id });
+            }, 1000);
         }
     }
 
@@ -98,7 +102,7 @@ export class App extends Component<any, ISongsContainer> {
     }
 
     private registerAddSongEvent (): void {
-        this.socket.on('add', (song: ISong) => {
+        this.socket.on(SONG_ADDED_EVENT, (song: ISong) => {
             const isFirstSong: boolean = !this.state.songs.length;
             this.state.songs.push(song);
 
@@ -113,16 +117,13 @@ export class App extends Component<any, ISongsContainer> {
     }
 
     private registerDeleteSongEvent (): void {
-        this.socket.on('delete', (deleteMessage: { id: string; }) => {
+        this.socket.on(SONG_DELETED_EVENT, (deleteMessage: { id: string; }) => {
             if (!this.state.songs.length) {
                 return;
             }
 
             const firstSongId: string = this.state.songs[ 0 ].id;
-
-            this.setState({
-                songs: this.state.songs.filter((song: ISong) => song.id !== deleteMessage.id)
-            });
+            this.setState({ songs: this.state.songs.filter((song: ISong) => song.id !== deleteMessage.id) });
 
             if (firstSongId === deleteMessage.id) {
                 if (!this.state.songs.length) {
