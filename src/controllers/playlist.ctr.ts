@@ -11,9 +11,7 @@ export class PlaylistCtr {
     getSongs (request: Request, response: Response): void {
         response
             .status(200)
-            .json({
-                songs: playlistSrv.getSongs()
-            });
+            .json({ songs: playlistSrv.getSongs() });
     }
 
     async addSong (request: Request, response: Response, next: NextFunction): Promise<void> {

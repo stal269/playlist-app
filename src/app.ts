@@ -4,7 +4,6 @@ import * as path from 'path';
 import * as bodyParser from 'body-parser';
 import playlistCtr from './controllers/playlist.ctr';
 const getVideoId = require('get-video-id');
-import sio from './index';
 
 class App {
 
