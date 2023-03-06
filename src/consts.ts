@@ -1,14 +1,7 @@
-export const TOPIC_NAME = 'events-v2';
 export const ADD_SONG = 'add';
 export const DELETE_SONG = 'delete';
 export const DURATION_FORMAT = 'hh:mm:ss';
 export const YOUTUBE_API_VERSION = 'v3';
 export const VIDEO_METADATA_PARTS = 'snippet, contentDetails';
-export const KAFKA_HOST = 'kafka:9092';
-export const TOPIC_GRACE_PERIOD = 30000;
-export const TOPIC_PROP_INIT = 'topic';
 export const SONG_ADDED_EVENT = 'add';
 export const SONG_DELETED_EVENT = 'delete';
-export const CONSUMER_MESSAGE_EVENT = 'message';
-export const CONSUMER_ERROR_EVENT = 'error';
-export const PRODUCER_READY_EVENT = 'ready';
