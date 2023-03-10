@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 const axios = require('axios');
 declare let YT: any;
 import './app.css';
-import { ON_PLAYER_READY_EVENT, ON_PLAYER_STATE_CHANGE, PLAYER_HEIGHT, PLAYER_WIDTH, SONGS_API_PATH, SONG_ADDED_EVENT, SONG_DELETED_EVENT } from './consts';
+import { INTERVAL_PERIOD_RESTART, ON_PLAYER_READY_EVENT, ON_PLAYER_STATE_CHANGE, PLAYER_HEIGHT, PLAYER_WIDTH, SONGS_API_PATH, SONG_ADDED_EVENT, SONG_DELETED_EVENT } from './consts';
 
 export class App extends Component<any, ISongsContainer> {
 
@@ -91,8 +91,9 @@ export class App extends Component<any, ISongsContainer> {
                     return;
                 }
 
+                this.player.stopVideo();
                 this.player.loadVideoById({ videoId: this.state.songs[ 0 ].id });
-            }, 1000);
+            }, INTERVAL_PERIOD_RESTART);
         }
     }
 

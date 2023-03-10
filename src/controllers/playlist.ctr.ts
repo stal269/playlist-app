@@ -8,16 +8,18 @@ export class PlaylistCtr {
     constructor (readonly playlistSrv: PlaylistSrv, readonly googleApi: GoogleApi) {
     }
 
-    getSongs (request: Request, response: Response): void {
+    async getSongs (request: Request, response: Response): Promise<void> {
+        const songs = await playlistSrv.getSongs();
+
         response
             .status(200)
-            .json({ songs: playlistSrv.getSongs() });
+            .json({ songs });
     }
 
     async addSong (request: Request, response: Response, next: NextFunction): Promise<void> {
         const inputSong: Song = request.body;
         const enrichedSong = await this.googleApi.setVideosMetadata([ inputSong ]);
-        const songId: string = this.playlistSrv.addSong(enrichedSong[ 0 ]);
+        const songId: string = await this.playlistSrv.addSong(enrichedSong[ 0 ]);
         request.body.songId = songId;
 
         if (songId === null) {

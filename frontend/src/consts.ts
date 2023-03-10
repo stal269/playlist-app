@@ -5,3 +5,4 @@ export const SONG_DELETED_EVENT = 'delete';
 export const SONGS_API_PATH = '/playlist/songs';
 export const ON_PLAYER_READY_EVENT = 'onReady';
 export const ON_PLAYER_STATE_CHANGE = 'onStateChange';
+export const INTERVAL_PERIOD_RESTART = 2000;

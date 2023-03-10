@@ -1,32 +1,80 @@
-import { ADD_SONG, DELETE_SONG, SONG_ADDED_EVENT, SONG_DELETED_EVENT } from '../consts';
+import { PLAYLIST_CHANNEL, PLAYLIST_KEY, REDIS_URL, SONG_ADDED_EVENT, SONG_DELETED_EVENT } from '../consts';
+import { createClient } from 'redis';
 import sio from '../index';
 
 export class PlaylistSrv {
 
+    private client;
+    private sub;
+    private pub;
     private songs: Song[] = [];
 
     constructor () { this.init(); }
 
-    init () {
-
+    async init () {
+        this.client = createClient({ url: REDIS_URL });
+        this.sub = createClient({ url: REDIS_URL });
+        this.subscribe();
+        this.pub = createClient({ url: REDIS_URL });
+        await this.pub.connect();
+        this.client.on('error', err => console.log('Redis Client Error', err));
+        await this.client.connect();
+        const songsStrs = await this.client.lRange(PLAYLIST_KEY, 0, -1);
+        this.songs = songsStrs.map(song => JSON.parse(song));
     };
 
-    addSong (song: Song): string {
+    async addSong (song: Song): Promise<string> {
         const newSong: Song = { ...song };
-        if (this.isDuplicate(newSong)) return null;
+        if (this.isDuplicate([], newSong)) return null;
+        const newSongStr = JSON.stringify(newSong);
+        await this.client.rPush(PLAYLIST_KEY, newSongStr);
+
+        await this.pub.publish(PLAYLIST_CHANNEL, JSON.stringify({
+            event: SONG_ADDED_EVENT,
+            payload: newSongStr
+        }));
 
         return newSong.id;
     }
 
-    deleteSong (songId: string): void {
+    async deleteSong (songId: string): Promise<void> {
+        const deletedSong = this.songs.find(({ id }) => id === songId);
+        await this.client.lRem(PLAYLIST_KEY, 1, JSON.stringify(deletedSong));
+
+        await this.pub.publish(PLAYLIST_CHANNEL, JSON.stringify({
+            event: SONG_DELETED_EVENT,
+            payload: songId
+        }));
     };
 
-    getSongs (): Song[] { return this.songs; }
+    async subscribe (): Promise<void> {
+        await this.sub.connect();
+        this.sub.subscribe(PLAYLIST_CHANNEL, (message, channel) => {
+            const parsedMessage = JSON.parse(message);
 
-    updatePlaylist (songs: Song[]) { this.songs = songs; }
+            switch (parsedMessage.event) {
+                case SONG_ADDED_EVENT:
+                    this.songs.push(JSON.parse(parsedMessage.payload));
+                    sio.emit(SONG_ADDED_EVENT, JSON.parse(parsedMessage.payload));
+                    break;
+                case SONG_DELETED_EVENT:
+                    this.songs = this.songs.filter(({ id }) => id !== parsedMessage.payload);
+                    sio.emit(SONG_DELETED_EVENT, { id: parsedMessage.payload });
+                    break;
+            }
+        });
 
-    isDuplicate (newSong: Song): boolean {
-        return !!this.songs.find((song: Song) =>
+        this.sub.on('subscribe', (channel, count) => {
+            console.log(`subscribed to channel: ${ channel }`);
+        });
+    }
+
+    getSongs (): Song[] {
+        return this.songs;
+    }
+
+    isDuplicate (songs: Song[], newSong: Song): boolean {
+        return !!songs.find((song: Song) =>
             song.id === newSong.id
         );
     }
