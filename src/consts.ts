@@ -7,5 +7,5 @@ export const SONG_ADDED_EVENT = 'add';
 export const SONG_DELETED_EVENT = 'delete';
 export const PLAYLIST_KEY = 'playlist';
 export const PLAYLIST_CHANNEL = PLAYLIST_KEY;
-// change to 'redis://redis:6379' when in container
-export const REDIS_URL = 'redis://localhost:6379'; 
+// change to 'redis://localhost:6379' when working locally
+export const REDIS_URL = 'redis://redis:6379';

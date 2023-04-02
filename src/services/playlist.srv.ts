@@ -1,12 +1,13 @@
 import { PLAYLIST_CHANNEL, PLAYLIST_KEY, REDIS_URL, SONG_ADDED_EVENT, SONG_DELETED_EVENT } from '../consts';
 import { createClient } from 'redis';
 import sio from '../index';
+import { RedisClientType } from '@redis/client';
 
 export class PlaylistSrv {
 
-    private client;
-    private sub;
-    private pub;
+    private client: RedisClientType;
+    private sub: RedisClientType;
+    private pub: RedisClientType;
     private songs: Song[] = [];
 
     constructor () { this.init(); }
@@ -49,6 +50,7 @@ export class PlaylistSrv {
 
     async subscribe (): Promise<void> {
         await this.sub.connect();
+
         this.sub.subscribe(PLAYLIST_CHANNEL, (message, channel) => {
             const parsedMessage = JSON.parse(message);
 
@@ -64,7 +66,7 @@ export class PlaylistSrv {
             }
         });
 
-        this.sub.on('subscribe', (channel, count) => {
+        this.sub.on('subscribe', (channel) => {
             console.log(`subscribed to channel: ${ channel }`);
         });
     }
