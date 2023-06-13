@@ -1,6 +1,13 @@
 import app from './app';
-const server = require('http').createServer(app.express);
-const sio = require('socket.io')(server);
+const spdy = require('spdy');
+const fs = require('fs');
+
+const options = {
+    key: fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem')
+};
+
+const server = spdy.createServer(options, app.express);
 const port: string | number = process.env.PORT || 3000;
 
 server.listen(port, (err: Error) => {
@@ -8,5 +15,3 @@ server.listen(port, (err: Error) => {
 
     return console.log(`server is listening on ${ port }`);
 });
-
-export default sio;

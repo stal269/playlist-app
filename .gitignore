@@ -8,3 +8,7 @@
 .vscode
 .env
 **/.DS_Store
+
+CloudFormation.yaml
+cert.pem
+key.pem

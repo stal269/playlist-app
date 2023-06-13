@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Playlist } from './components/playlist/playlist.cmp';
 import { ISong } from './components/song/song.model';
-import io from 'socket.io-client';
 const axios = require('axios');
 declare let YT: any;
 import './app.css';
@@ -11,11 +10,10 @@ export class App extends Component<any, ISongsContainer> {
 
     private static YOUTUBE_PLAYER_SOURCE_URL = 'https://www.youtube.com/iframe_api';
     private player: any = null;
-    private socket: any;
+    private evtSource = new EventSource('/events');
 
     constructor (props: any) {
         super(props);
-        this.socket = io();
         this.state = { songs: [] };
     }
 
@@ -103,33 +101,25 @@ export class App extends Component<any, ISongsContainer> {
     }
 
     private registerAddSongEvent (): void {
-        this.socket.on(SONG_ADDED_EVENT, (song: ISong) => {
+        this.evtSource.addEventListener(SONG_ADDED_EVENT, event => {
+            const song = JSON.parse(event.data);
             const isFirstSong: boolean = !this.state.songs.length;
             this.state.songs.push(song);
-
-            this.setState({
-                songs: this.state.songs
-            });
-
-            if (isFirstSong) {
-                this.playNextSong();
-            }
+            this.setState({ songs: this.state.songs });
+            if (isFirstSong) this.playNextSong();
         });
     }
 
     private registerDeleteSongEvent (): void {
-        this.socket.on(SONG_DELETED_EVENT, (deleteMessage: { id: string; }) => {
-            if (!this.state.songs.length) {
-                return;
-            }
-
+        this.evtSource.addEventListener(SONG_DELETED_EVENT, event => {
+            const songIdObj = JSON.parse(event.data);
+            if (!this.state.songs.length) return;
             const firstSongId: string = this.state.songs[ 0 ].id;
-            this.setState({ songs: this.state.songs.filter((song: ISong) => song.id !== deleteMessage.id) });
+            this.setState({ songs: this.state.songs.filter((song: ISong) => song.id !== songIdObj.id) });
 
-            if (firstSongId === deleteMessage.id) {
+            if (firstSongId === songIdObj.id) {
                 if (!this.state.songs.length) {
                     this.player.stopVideo();
-
                     return;
                 }
 
