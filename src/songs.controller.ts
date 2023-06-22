@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Song } from './models/song.model';
+import { CreateSong, Song } from './models/song.model';
 import { PopulateIdPipe } from './pipes/populate-id/populate-id.pipe';
 
 // TODO: we might need to inject res, because we need too control the status code
@@ -19,8 +19,8 @@ export class SongsController {
     // 2. id (but it should come from a middleware)
     // how do we do middleware in nest
     @Post()
-    createSong (@Body(new PopulateIdPipe()) song: Song): void {
-        console.log("post method got called");
+    createSong (@Body(new PopulateIdPipe()) song: CreateSong): string {
+        return song.id;
     }
 
     @Delete(':id')
