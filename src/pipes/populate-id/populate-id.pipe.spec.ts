@@ -18,9 +18,7 @@ describe('PopulateIdPipe', () => {
         const url = 'https://www.youtube.co';
 
         expect(() => {
-            pipe.transform({ url }, {
-                type: 'body'
-            });
+            pipe.transform({ url }, { type: 'body' });
         }).toThrow();
     });
 });
